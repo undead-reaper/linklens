@@ -16,6 +16,10 @@ app.get("/", async (req, reply) => {
 app.get("/api", async (request: FastifyRequest, reply: FastifyReply) => {
   const query = request.query as APIParams;
 
+  if (!URL.canParse(query.url)) {
+    return reply.status(400).send({ error: "url is invalid" });
+  }
+
   if (!query.url) {
     return reply.status(400).send({ error: "url is required" });
   }

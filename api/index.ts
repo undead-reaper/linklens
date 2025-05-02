@@ -1,4 +1,5 @@
 import Fastify, { type FastifyReply, type FastifyRequest } from "fastify";
+import { unfurl } from "unfurl.js";
 
 const app = Fastify({
   logger: true,
@@ -11,6 +12,35 @@ app.get("/api/ping", async (_, reply) => {
 app.get("/", async (req, reply) => {
   return reply.status(200).type("text/html").send(html);
 });
+
+app.get("/api", async (request: FastifyRequest, reply: FastifyReply) => {
+  const query = request.query as APIParams;
+
+  if (!query.url) {
+    return reply.status(400).send({ error: "url is required" });
+  }
+
+  const result = await unfurl(query.url, {
+    oembed: query.oembed,
+    timeout: query.timeout,
+    follow: query.follow,
+    compress: query.compress,
+    size: query.size,
+    headers: query.headers,
+  });
+
+  return reply.status(200).send(result);
+});
+
+if (process.env.BUN_ENV === "development") {
+  app.listen({ port: 3000 }, (err, address) => {
+    if (err) {
+      app.log.error(err);
+      process.exit(1);
+    }
+    app.log.info(`Server listening at ${address}`);
+  });
+}
 
 export default async function handler(
   request: FastifyRequest,

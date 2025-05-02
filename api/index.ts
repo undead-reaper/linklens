@@ -4,7 +4,7 @@ const app = Fastify({
   logger: true,
 });
 
-app.get("/ping", async (_, reply) => {
+app.get("/api/ping", async (_, reply) => {
   return reply.status(200).send({ message: "pong" });
 });
 

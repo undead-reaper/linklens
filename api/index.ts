@@ -1,8 +1,13 @@
+import cors from "@fastify/cors";
 import Fastify, { type FastifyReply, type FastifyRequest } from "fastify";
 import { unfurl } from "unfurl.js";
 
 const app = Fastify({
   logger: true,
+});
+
+await app.register(cors, {
+  origin: true,
 });
 
 app.get("/api/ping", async (_, reply) => {
